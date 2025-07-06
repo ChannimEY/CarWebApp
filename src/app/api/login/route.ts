@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
         console.log('Request body:', { email, password: password ? '***' : 'missing' });
         console.log('CAR_BASE_URL:', process.env.CAR_BASE_URL);
 
-        const response = await fetch(`${process.env.CAR_BASE_URL}/login`, {
+        const response = await fetch('https://car-nextjs-api.cheatdev.online/login', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }) 

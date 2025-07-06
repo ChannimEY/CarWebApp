@@ -22,7 +22,8 @@ const NavbarComponent = ({
     title: "Shadcnblocks.com",
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Home", url: "/" },
+    { title: "Cars", url: "/cars" },
     {
       title: "Products",
       url: "#",

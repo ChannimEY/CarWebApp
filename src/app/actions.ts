@@ -9,66 +9,87 @@ interface UserCreateType{
     confirm_password: string
 }
 
+interface UserLoginType{
+    email:string,
+    password: string
+}
 
 export async function createUser(prevState:unknown, formData:FormData){
-
     const userSignUp:UserCreateType ={
         username: formData.get('username')?.toString() || '',
         email: formData.get('email')?.toString() || '',
         password: formData.get('password')?.toString() || '',
         confirm_password: formData.get('confirm_password')?.toString() || ''
     }
-    const res = await fetch('https://nham-ey.istad.co/register',
-        {
-            method:'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body:JSON.stringify(userSignUp)
+    
+    try {
+        const res = await fetch('https://car-nextjs-api.cheatdev.online/register',
+            {
+                method:'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify(userSignUp)
+            }
+        );
+        
+        const jsonData = await res.json();
+        console.log('Signup response:', jsonData);
+        
+        if(!res.ok){
+            return {
+                message: jsonData.message || 'Failed to register'
+            };
         }
-    );
-    const jsonData = await res.json();
-    console.log(jsonData);
-    if(!res.ok){
+        
+        // Redirect to login page after successful registration
+        redirect('/login')
+    } catch (error) {
+        console.error('Signup error:', error);
         return {
-            message: 'Fail to login'
+            message: 'Network error occurred'
         };
     }
-    redirect('/dashboard')
 }
-
-
-interface UserLoginType{
-   
-    email:string,
-    password: string
-}
-
 
 export async function UserLogin(prevState:unknown, formData:FormData){
-
-    const userSignUp:UserLoginType ={
-     
+    const userLogin:UserLoginType ={
         email: formData.get('email')?.toString() || '',
         password: formData.get('password')?.toString() || ''
     }
-    const res = await fetch('https://nham-ey.istad.co/register',
-        {
-            method:'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body:JSON.stringify(userSignUp)
+    
+    try {
+        const res = await fetch('https://car-nextjs-api.cheatdev.online/login',
+            {
+                method:'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify(userLogin)
+            }
+        );
+        
+        const jsonData = await res.json();
+        console.log('Login response:', jsonData);
+        
+        if(!res.ok){
+            return {
+                message: jsonData.message || 'Failed to login'
+            };
         }
-    );
-    const jsonData = await res.json();
-    console.log(jsonData);
-    if(!res.ok){
+        
+        // Store tokens in cookies (server-side)
+        const response = new Response();
+        response.headers.set('Set-Cookie', `accessToken=${jsonData.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict`);
+        response.headers.set('Set-Cookie', `refreshToken=${jsonData.refresh_token}; Path=/; HttpOnly; Secure; SameSite=Strict`);
+        
+        redirect('/dashboard')
+    } catch (error) {
+        console.error('Login error:', error);
         return {
-            message: 'Fail to login'
+            message: 'Network error occurred'
         };
     }
-    redirect('/dashboard')
 }
 
 
